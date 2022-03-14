@@ -1,12 +1,13 @@
 import express,{Request,Response  } from "express";
 import {Client} from "../database";
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 
 export type user = {
     id ?: Number,
     name : String,
     password: String,
-    age: Number
+    age?: Number
 }
 
 export class userStorage {
@@ -39,19 +40,38 @@ export class userStorage {
         try{
             const connect = await Client.connect();
             const sql = "INSERT INTO users (name,password,age) VALUES ($1,$2,$3)";
-            const result = await connect.query(sql,[user.name,user.password,user.age]);
+            const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
+            const result = await connect.query(sql,[user.name,hashPass,user.age]);
             connect.release();
             return result.rows[0];
         }catch(err){
             throw new Error(`Can't create user with : ${err}`)
         } 
     }
+    // Authenticate 
+    async authenticate(name:string,password:string):Promise<user | null>{
+        const connect = await Client.connect();
+        const sql = "SELECT password FROM users WHERE name = $1";
+        const result = await connect.query(sql,[name]);
+
+        if(result.rows.length) {
+    
+            const user = result.rows[0]
+          
+            if (bcrypt.compareSync(password + (process.env.BCRYPT_PASSWORD as string), user.password)) {
+              return user
+            }
+          }
+      
+          return null
+    }
     // Update Specified user
     async update(id:number,user:user) :Promise<user> {
         try{
             const connect = await Client.connect();
             const sql = "UPDATE products SET name = $1,password = $2,age = $3 WHERE id = $4";
-            const result = await connect.query(sql,[user.name,user.password,user.age,id]);
+            const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
+            const result = await connect.query(sql,[user.name,hashPass,user.age,id]);
             connect.release();
             return result.rows[0];
         }catch(err){

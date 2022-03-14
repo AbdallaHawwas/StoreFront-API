@@ -1,5 +1,7 @@
 import  express,{Request,Response}  from "express"
 import {product,productStore} from '../models/product';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
 const productModel = new productStore();
 
@@ -24,13 +26,29 @@ const show = async(req:Request,res:Response)=>{
 
 // Add New product
 const create = async(req:Request,res:Response)=>{
-    const products : product ={
-        name: req.body.name,
-        price:req.body.price
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token = (authorizationHeader as string).split(' ')[1]
+        jwt.verify(token, process.env.TOKEN_SECRET as jwt.Secret)
+    } catch(err) {
+        res.status(401)
+        res.json('Access denied, invalid token')
+        return
+    }
+    
+    try{
+        const products : product ={
+            name: req.body.name,
+            price:req.body.price
+            
+        }
+        const product = await productModel.create(products);
+        res.json(product);
+    }catch(err){
+        res.status(400)
+        res.json(err)
     }
 
-    const product = await productModel.create(products);
-    res.json(product);
 }
 
 // Add New product
@@ -47,8 +65,23 @@ const update = async(req:Request,res:Response)=>{
 // Delete product
 const deleteproduct = async(req:Request,res:Response)=>{
 
-    const product = await productModel.delete(req.body.id);
-    res.json(product);
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token = (authorizationHeader as string).split(' ')[1]
+        jwt.verify(token, process.env.TOKEN_SECRET as jwt.Secret)
+    } catch(err) {
+        res.status(401)
+        res.json('Access denied, invalid token')
+        return
+    }
+
+    try{
+        const product = await productModel.delete(req.body.id);
+        res.json(product);
+    }catch(err){
+        res.status(400)
+        res.json(err)
+    }
 }
 
 export default productRoutes;
