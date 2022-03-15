@@ -28,13 +28,13 @@ const show = async(req:Request,res:Response)=>{
 const create = async(req:Request,res:Response)=>{
     const users : user ={
         firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        password:req.body.password
+        lastName:  req.body.lastName,
+        password:  req.body.password
     }
     try{
         const user = await userModel.create(users);
         const token = jwt.sign({users : user}, process.env.TOKEN_SECRET as jwt.Secret);
-        res.json(token);
+        res.json({user,token});
     }
     catch(err){
         res.status(400)
@@ -76,16 +76,15 @@ const update = async(req:Request,res:Response)=>{
         res.json(err)
         return
     }
-
-    try {
+    try{
         const user = await userModel.update(parseInt(req.params.id),users);
         const token = jwt.sign({users : user}, process.env.TOKEN_SECRET as jwt.Secret);
-        res.json(token);    
-    } catch(err) {
-        res.status(400)
-        res.json(err as string + users)
+        res.json({user,token});
     }
-
+    catch(err){
+        res.status(400)
+        res.json(`${err} : ${users}`)
+    }
 }
 
 // Delete user

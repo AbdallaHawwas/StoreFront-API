@@ -106,9 +106,9 @@ var userStorage = /** @class */ (function () {
                         return [4 /*yield*/, database_1.Client.connect()];
                     case 1:
                         connect = _a.sent();
-                        sql = "INSERT INTO users (firstName,password,lastName) VALUES ($1,$2,$3)";
+                        sql = "INSERT INTO users (firstName,lastName,password) VALUES ($1,$2,$3) RETURNING *";
                         hashPass = bcrypt_1["default"].hashSync(user.password + process.env.BCRYPT_PASSWORD, parseInt(process.env.SALT_ROUNDS));
-                        return [4 /*yield*/, connect.query(sql, [user.firstName, hashPass, user.lastName])];
+                        return [4 /*yield*/, connect.query(sql, [user.firstName, user.lastName, hashPass])];
                     case 2:
                         result = _a.sent();
                         connect.release();

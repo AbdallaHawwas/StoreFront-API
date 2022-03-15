@@ -94,7 +94,7 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 2:
                 user = _a.sent();
                 token = jsonwebtoken_1["default"].sign({ users: user }, process.env.TOKEN_SECRET);
-                res.json(token);
+                res.json({ user: user, token: token });
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
@@ -164,12 +164,12 @@ var update = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 2:
                 user = _a.sent();
                 token = jsonwebtoken_1["default"].sign({ users: user }, process.env.TOKEN_SECRET);
-                res.json(token);
+                res.json({ user: user, token: token });
                 return [3 /*break*/, 4];
             case 3:
                 err_3 = _a.sent();
                 res.status(400);
-                res.json(err_3 + users);
+                res.json("".concat(err_3, " : ").concat(users));
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

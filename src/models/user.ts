@@ -39,9 +39,9 @@ export class userStorage {
     async create(user:user) :Promise<user> {
         try{
             const connect = await Client.connect();
-            const sql = "INSERT INTO users (firstName,password,lastName) VALUES ($1,$2,$3)";
+            const sql = "INSERT INTO users (firstName,lastName,password) VALUES ($1,$2,$3) RETURNING *";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
-            const result = await connect.query(sql,[user.firstName,hashPass,user.lastName]);
+            const result = await connect.query(sql,[user.firstName,user.lastName,hashPass]);
             connect.release();
             return result.rows[0];
         }catch(err){
