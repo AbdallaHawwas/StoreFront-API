@@ -4,7 +4,9 @@ import {Client} from "../database";
 export type order = {
     id ?: Number,
     productId : Number,
-    userId: Number
+    userId: Number,
+    quantity: Number,
+    status: Number // [1 => active, 2 => complete]
 }
 
 export class orderStore{
@@ -15,7 +17,7 @@ export class orderStore{
             const sql = "SELECT * FROM orders";
             const result = await connect.query(sql);
             connect.release();
-            return result.rows[0];
+            return result.rows as unknown as order;
         }catch(err){
             throw new Error(`Can't get orders ${err}`)
         }
@@ -36,8 +38,8 @@ export class orderStore{
     async create(order:order) :Promise<order> {
         try{
             const connect = await Client.connect();
-            const sql = 'INSERT INTO orders (productId,userId) VALUES ($1,$2) RETURNING *';
-            const result = await connect.query(sql,[order.productId,order.userId]);
+            const sql = 'INSERT INTO orders (productId,userId,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
+            const result = await connect.query(sql,[order.productId,order.userId,order.quantity,order.status]);
             connect.release();
             return result.rows[0]; 
         }catch(err){
@@ -48,8 +50,8 @@ export class orderStore{
     async update(id:number,order:order) :Promise<order> {
         try{
             const connect = await Client.connect();
-            const sql = 'UPDATE orders SET productId = $1,userId = $2 WHERE id = $3';
-            const result = await connect.query(sql,[order.productId,order.userId,id]);
+            const sql = 'UPDATE orders SET productId = $1,userId = $2,quantity = $3,status = $4 WHERE id = $5';
+            const result = await connect.query(sql,[order.productId,order.userId,order.quantity,order.status,id]);
             connect.release();
             return result.rows[0]; 
         }catch(err){

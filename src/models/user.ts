@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 
 export type user = {
     id ?: Number,
-    name : String,
-    password: String,
-    age?: Number
+    firstName : String,
+    lastName: String,
+    password: String
 }
 
 export class userStorage {
@@ -18,7 +18,7 @@ export class userStorage {
             const sql = "SELECT * FROM users";
             const result = await connect.query(sql);
             connect.release();
-            return result.rows[0];
+            return result.rows as unknown as user;
         }catch(err){
             throw new Error(`Can't get users ${err}`)
         }
@@ -27,7 +27,7 @@ export class userStorage {
     async show(id:number) :Promise<user> {
         try{
             const connect = await Client.connect();
-            const sql = "SELECT name,age FROM users WHERE id=$1";
+            const sql = "SELECT firstName,lastName FROM users WHERE id=$1";
             const result = await connect.query(sql,[id]);
             connect.release();
             return result.rows[0];
@@ -39,9 +39,9 @@ export class userStorage {
     async create(user:user) :Promise<user> {
         try{
             const connect = await Client.connect();
-            const sql = "INSERT INTO users (name,password,age) VALUES ($1,$2,$3)";
+            const sql = "INSERT INTO users (firstName,password,lastName) VALUES ($1,$2,$3)";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
-            const result = await connect.query(sql,[user.name,hashPass,user.age]);
+            const result = await connect.query(sql,[user.firstName,hashPass,user.lastName]);
             connect.release();
             return result.rows[0];
         }catch(err){
@@ -49,10 +49,10 @@ export class userStorage {
         } 
     }
     // Authenticate 
-    async authenticate(name:string,password:string):Promise<user | null>{
+    async authenticate(firstName:string,lastName:string,password:string):Promise<user | null>{
         const connect = await Client.connect();
-        const sql = "SELECT password FROM users WHERE name = $1";
-        const result = await connect.query(sql,[name]);
+        const sql = "SELECT password FROM users WHERE firstName = $1,lastName = $2";
+        const result = await connect.query(sql,[firstName,lastName]);
 
         if(result.rows.length) {
     
@@ -69,9 +69,9 @@ export class userStorage {
     async update(id:number,user:user) :Promise<user> {
         try{
             const connect = await Client.connect();
-            const sql = "UPDATE products SET name = $1,password = $2,age = $3 WHERE id = $4";
+            const sql = "UPDATE products SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
-            const result = await connect.query(sql,[user.name,hashPass,user.age,id]);
+            const result = await connect.query(sql,[user.firstName,hashPass,user.lastName,id]);
             connect.release();
             return result.rows[0];
         }catch(err){

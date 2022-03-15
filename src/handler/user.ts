@@ -20,16 +20,16 @@ const index = async(req:Request,res:Response)=>{
 
 // Get Speciefied user
 const show = async(req:Request,res:Response)=>{
-    const user = await userModel.show(req.body.id);
+    const user = await userModel.show(parseInt(req.params.id));
     res.json(user);
 }
 
 // Add New user
 const create = async(req:Request,res:Response)=>{
     const users : user ={
-        name: req.body.name,
-        password:req.body.password,
-        age:req.body.age
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        password:req.body.password
     }
     try{
         const user = await userModel.create(users);
@@ -44,11 +44,12 @@ const create = async(req:Request,res:Response)=>{
 // Authenticate User
 const authenticate = async (req:Request,res:Response)=>{
     const users : user ={
-        name: req.body.name,
-        password: req.body.password
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        password:req.body.password
     }
     try{
-        const user = await userModel.authenticate(users.name as string ,users.password as string);
+        const user = await userModel.authenticate(users.firstName as string ,users.lastName as string ,users.password as string);
         const token = jwt.sign({users : user}, process.env.TOKEN_SECRET as jwt.Secret);
         res.json(token);
     }
@@ -61,14 +62,15 @@ const authenticate = async (req:Request,res:Response)=>{
 const update = async(req:Request,res:Response)=>{
     const users : user ={
         id: parseInt(req.params.id),
-        name: req.body.name,
-        password:req.body.password,
-        age:req.body.age
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        password:req.body.password
     }
     try {
         const authorizationHeader = req.headers.authorization
         const token = (authorizationHeader as string).split(' ')[1]
         jwt.verify(token, process.env.TOKEN_SECRET as jwt.Secret)
+        res.status(200)
     } catch(err) {
         res.status(401)
         res.json(err)
@@ -76,7 +78,7 @@ const update = async(req:Request,res:Response)=>{
     }
 
     try {
-        const user = await userModel.update(req.body.id,users);
+        const user = await userModel.update(parseInt(req.params.id),users);
         const token = jwt.sign({users : user}, process.env.TOKEN_SECRET as jwt.Secret);
         res.json(token);    
     } catch(err) {
@@ -88,17 +90,17 @@ const update = async(req:Request,res:Response)=>{
 
 // Delete user
 const deleteuser = async(req:Request,res:Response)=>{
-    try {
-        const authorizationHeader = req.headers.authorization
-        const token = (authorizationHeader as string).split(' ')[1]
-        jwt.verify(token, process.env.TOKEN_SECRET as string)
-    } catch(err) {
-        res.status(401)
-        res.json('Access denied, invalid token')
-        return
-    }
+    // try {
+    //     const authorizationHeader = req.headers.authorization
+    //     const token = (authorizationHeader as string).split('.')[1]
+    //     jwt.verify(token, process.env.TOKEN_SECRET as string)
+    // } catch(err) {
+    //     res.status(401)
+    //     res.json('Access denied, invalid token')
+    //     return
+    // }
     try{
-        const user = await userModel.delete(req.body.id);
+        const user = await userModel.delete(parseInt(req.params.id));
         res.json(user);
     }catch(err){
         res.status(400)

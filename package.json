@@ -6,7 +6,11 @@
   "scripts": {
     "build": "npx tsc",
     "test": "ENV=test db-migrate --env test up && jasmine-ts && db-migrate db:drop test",
-    "serve": "nodemon src/server.ts"
+    "serve": "nodemon src/server.ts",
+    "start": "node src/server.ts",
+    "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./build --onSuccess \"node ./build/server.js\"",
+    "jasmine-test": "jasmine-ts",
+    "tsc": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +39,10 @@
     "@types/pg": "^8.6.5",
     "@types/supertest": "^2.0.11",
     "jasmine": "^4.0.2",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "jasmine-spec-reporter": "^6.0.0",
+    "jasmine-ts": "^0.3.0",
+    "ts-node": "^9.1.1",
+    "tsc-watch": "^4.2.9"
   }
 }

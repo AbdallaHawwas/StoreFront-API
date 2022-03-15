@@ -20,44 +20,39 @@ const index = async(req:Request,res:Response)=>{
 
 // Get Speciefied order
 const show = async(req:Request,res:Response)=>{
-    const order = await orderModel.show(req.body.id);
+    const order = await orderModel.show(parseInt(req.params.id));
     res.json(order);
 }
 
 // Add New order
 const create = async(req:Request,res:Response)=>{
-    try {
-        const authorizationHeader = req.headers.authorization
-        const token = (authorizationHeader as string).split(' ')[1]
-        jwt.verify(token, process.env.TOKEN_SECRET as jwt.Secret)
-    } catch(err) {
-        res.status(401)
-        res.json('Access denied, invalid token')
-        return
+    const orders : order ={
+        productId: req.body.productId,
+        userId:req.body.userId,
+        quantity:req.body.quantity,
+        status:req.body.status
     }
-    
-    try{
-        const orders : order ={
-            productId: req.body.productId,
-            userId:req.body.userId   
-        }
+    try {
         const order = await orderModel.create(orders);
-        res.json(order);
-    }catch(err){
+        const token = jwt.sign({orders:order}, process.env.TOKEN_SECRET as jwt.Secret)
+        res.json({order,token});
+    } catch(err) {
         res.status(400)
         res.json(err)
+        return
     }
-
 }
 
 // Add New order
 const update = async(req:Request,res:Response)=>{
     const orders : order ={
         productId: req.body.productId,
-        userId:req.body.userId
+        userId:req.body.userId,
+        quantity:req.body.quantity,
+        status:req.body.status
     }
 
-    const order = await orderModel.update(req.body.id,orders);
+    const order = await orderModel.update(parseInt(req.params.id),orders);
     res.json(order);
 }
 
@@ -75,7 +70,7 @@ const deleteorder = async(req:Request,res:Response)=>{
     }
 
     try{
-        const order = await orderModel.delete(req.body.id);
+        const order = await orderModel.delete(parseInt(req.params.id));
         res.json(order);
     }catch(err){
         res.status(400)

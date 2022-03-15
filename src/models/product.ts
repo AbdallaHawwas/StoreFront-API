@@ -15,7 +15,7 @@ export class productStore{
             const sql = "SELECT * FROM products";
             const result = await connect.query(sql);
             connect.release();
-            return result.rows[0];
+            return result.rows as unknown as product;
         }catch(err){
             throw new Error(`Can't get products ${err}`)
         }
