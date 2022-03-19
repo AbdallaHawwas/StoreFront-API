@@ -46,8 +46,9 @@ var orderRoutes = function (app) {
     app.get('/orders', index);
     app.get('/orders/:id', show);
     app.post('/orders', create);
-    app.put('/orders/:id', update);
     app["delete"]('/orders/:id', deleteorder);
+    // add product
+    app.post('/orders/:id/products', addProduct);
 };
 // Get All orders
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -77,7 +78,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 // Add New order
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orders, order, token, err_1;
+    var orders, authorizationHeader, token, decode, order, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -87,14 +88,27 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                     quantity: req.body.quantity,
                     status: req.body.status
                 };
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    decode = jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                    if (decode.id !== orders.userId) {
+                        throw new Error('User id does not match!');
+                    }
+                    res.json(decode);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, orderModel.create(orders)];
             case 2:
                 order = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ orders: order }, process.env.TOKEN_SECRET);
-                res.json({ order: order, token: token });
+                res.json(order);
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
@@ -102,26 +116,6 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                 res.json(err_1);
                 return [2 /*return*/];
             case 4: return [2 /*return*/];
-        }
-    });
-}); };
-// Add New order
-var update = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orders, order;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                orders = {
-                    productId: req.body.productId,
-                    userId: req.body.userId,
-                    quantity: req.body.quantity,
-                    status: req.body.status
-                };
-                return [4 /*yield*/, orderModel.update(parseInt(req.params.id), orders)];
-            case 1:
-                order = _a.sent();
-                res.json(order);
-                return [2 /*return*/];
         }
     });
 }); };
@@ -156,6 +150,11 @@ var deleteorder = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
+    });
+}); };
+var addProduct = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/];
     });
 }); };
 exports["default"] = orderRoutes;

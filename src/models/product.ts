@@ -24,13 +24,13 @@ export class productStore{
     async show(id:number) :Promise<product> {
         try{
             const connect = await Client.connect();
-            const sql = 'SELECT * FROM products WHERE id = $1';
+            const sql = "SELECT * FROM products WHERE id=$1";
             const result = await connect.query(sql,[id]);
             connect.release();
             return result.rows[0];
         }catch(err){
-            throw new Error(`Can't get product with id ${id} ${err}`)
-        }
+            throw new Error(`Can't get product with id ${id} : ${err}`)
+        } 
     }
     // Add New product
     async create(product:product) :Promise<product> {

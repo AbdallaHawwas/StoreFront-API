@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "test": "ENV=test db-migrate --env test up && jasmine-ts && db-migrate db:drop test",
+    "test": "ENV=test db-migrate up --env test && jasmine-ts && db-migrate db:drop test",
+    "testt": "jasmine-ts 'src/models/tests/**/*.ts'",
     "serve": "nodemon src/server.ts",
     "start": "node src/server.ts",
     "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./build --onSuccess \"node ./build/server.js\"",
-    "jasmine-test": "jasmine-ts",
     "tsc": "tsc"
   },
   "author": "",
@@ -33,15 +33,15 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
-    "@types/jasmine": "^3.10.3",
+    "@types/jasmine": "^3.10.4",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.21",
     "@types/pg": "^8.6.5",
     "@types/supertest": "^2.0.11",
     "jasmine": "^4.0.2",
-    "supertest": "^6.2.2",
     "jasmine-spec-reporter": "^6.0.0",
-    "jasmine-ts": "^0.3.0",
+    "jasmine-ts": "^0.3.3",
+    "supertest": "^6.2.2",
     "ts-node": "^9.1.1",
     "tsc-watch": "^4.2.9"
   }

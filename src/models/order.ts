@@ -1,12 +1,14 @@
 import express,{Request,Response  } from "express";
 import {Client} from "../database";
+import { user } from "./user";
+import { product } from "./product";
 
 export type order = {
     id ?: Number,
     productId : Number,
     userId: Number,
     quantity: Number,
-    status: Number // [1 => active, 2 => complete]
+    status?: Number // [1 => active, 2 => complete]
 }
 
 export class orderStore{
@@ -35,29 +37,18 @@ export class orderStore{
         }
     }
     // Add New order
-    async create(order:order) :Promise<order> {
+    async create(order : order) :Promise<order>{
         try{
             const connect = await Client.connect();
-            const sql = 'INSERT INTO orders (productId,userId,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
+            const sql = 'INSERT INTO orders (product_id,user_id,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
             const result = await connect.query(sql,[order.productId,order.userId,order.quantity,order.status]);
             connect.release();
             return result.rows[0]; 
         }catch(err){
             throw new Error(`Can't add order ${err}`)
         }
-    }
-    // Update existing order
-    async update(id:number,order:order) :Promise<order> {
-        try{
-            const connect = await Client.connect();
-            const sql = 'UPDATE orders SET productId = $1,userId = $2,quantity = $3,status = $4 WHERE id = $5';
-            const result = await connect.query(sql,[order.productId,order.userId,order.quantity,order.status,id]);
-            connect.release();
-            return result.rows[0]; 
-        }catch(err){
-            throw new Error(`Can't Update order with id ${order.id} ${err}`)
-        }
-    }
+}
+
     // Delete existing user
     async delete(id:number) :Promise<order> {
         try{

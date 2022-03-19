@@ -45,33 +45,53 @@ var userModel = new user_1.userStorage();
 var userRoutes = function (app) {
     app.get('/users', index);
     app.get('/users/:id', show);
-    app.post('/user-auth', authenticate);
     app.post('/users', create);
-    app.put('/users/:id', update);
-    app["delete"]('/users/:id', deleteuser);
+    // app.post('/user-auth', authenticate)
+    // app.put('/users/:id', update)
+    // app.delete('/users/:id', deleteuser)
 };
 // Get All users
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user;
+    var user, authorizationHeader, token;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, userModel.index()];
             case 1:
                 user = _a.sent();
-                res.json(user);
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                    res.json(user);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
                 return [2 /*return*/];
         }
     });
 }); };
 // Get Speciefied user
 var show = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user;
+    var user, authorizationHeader, token;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, userModel.show(parseInt(req.params.id))];
             case 1:
                 user = _a.sent();
-                res.json(user);
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                    res.json(user);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
                 return [2 /*return*/];
         }
     });
@@ -93,7 +113,7 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                 return [4 /*yield*/, userModel.create(users)];
             case 2:
                 user = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ users: user }, process.env.TOKEN_SECRET);
+                token = jsonwebtoken_1["default"].sign({ firstName: users.firstName, lastName: users.lastName }, process.env.TOKEN_SECRET);
                 res.json({ user: user, token: token });
                 return [3 /*break*/, 4];
             case 3:
@@ -106,94 +126,20 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
     });
 }); };
 // Authenticate User
-var authenticate = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, user, token, err_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                users = {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    password: req.body.password
-                };
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, userModel.authenticate(users.firstName, users.lastName, users.password)];
-            case 2:
-                user = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ users: user }, process.env.TOKEN_SECRET);
-                res.json(token);
-                return [3 /*break*/, 4];
-            case 3:
-                err_2 = _a.sent();
-                res.status(401);
-                res.json({ err: err_2 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-// Add New user
-var update = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, authorizationHeader, token, user, token, err_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                users = {
-                    id: parseInt(req.params.id),
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    password: req.body.password
-                };
-                try {
-                    authorizationHeader = req.headers.authorization;
-                    token = authorizationHeader.split(' ')[1];
-                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
-                    res.status(200);
-                }
-                catch (err) {
-                    res.status(401);
-                    res.json(err);
-                    return [2 /*return*/];
-                }
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, userModel.update(parseInt(req.params.id), users)];
-            case 2:
-                user = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ users: user }, process.env.TOKEN_SECRET);
-                res.json({ user: user, token: token });
-                return [3 /*break*/, 4];
-            case 3:
-                err_3 = _a.sent();
-                res.status(400);
-                res.json("".concat(err_3, " : ").concat(users));
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-// Delete user
-var deleteuser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, err_4;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, userModel["delete"](parseInt(req.params.id))];
-            case 1:
-                user = _a.sent();
-                res.json(user);
-                return [3 /*break*/, 3];
-            case 2:
-                err_4 = _a.sent();
-                res.status(400);
-                res.json(err_4);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
+// const authenticate = async (req:Request,res:Response)=>{
+//     const users : user ={
+//         firstName: req.body.firstName,
+//         lastName: req.body.lastName,
+//         password:req.body.password
+//     }
+//     try{
+//         const user = await userModel.authenticate(users.firstName as string ,users.lastName as string ,users.password as string);
+//         const token = jwt.sign({firstName: users.firstName ,lastName: users.lastName}, process.env.TOKEN_SECRET as jwt.Secret);
+//         res.json(token);
+//     }
+//     catch(err){
+//         res.status(401)
+//         res.json({err})
+//     }
+// }
 exports["default"] = userRoutes;

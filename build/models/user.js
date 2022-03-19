@@ -156,7 +156,7 @@ var userStorage = /** @class */ (function () {
                         return [4 /*yield*/, database_1.Client.connect()];
                     case 1:
                         connect = _a.sent();
-                        sql = "UPDATE products SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
+                        sql = "UPDATE users SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
                         hashPass = bcrypt_1["default"].hashSync(user.password + process.env.BCRYPT_PASSWORD, parseInt(process.env.SALT_ROUNDS));
                         return [4 /*yield*/, connect.query(sql, [user.firstName, hashPass, user.lastName, id])];
                     case 2:

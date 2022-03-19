@@ -69,7 +69,7 @@ export class userStorage {
     async update(id:number,user:user) :Promise<user> {
         try{
             const connect = await Client.connect();
-            const sql = "UPDATE products SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
+            const sql = "UPDATE users SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
             const result = await connect.query(sql,[user.firstName,hashPass,user.lastName,id]);
             connect.release();

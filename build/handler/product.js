@@ -46,8 +46,6 @@ var productRoutes = function (app) {
     app.get('/products', index);
     app.get('/products/:id', show);
     app.post('/products', create);
-    app.put('/products/:id', update);
-    app["delete"]('/products/:id', deleteproduct);
 };
 // Get All products
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -77,7 +75,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 // Add New product
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var products, product, token, err_1;
+    var products, authorizationHeader, token, product, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -85,15 +83,23 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                     name: req.body.name,
                     price: req.body.price
                 };
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, productModel.create(products)];
             case 2:
                 product = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ products: product }, process.env.TOKEN_SECRET);
-                console.log('req.body =', req.body);
-                res.json({ product: product, token: token });
+                res.json({ product: product });
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
@@ -101,45 +107,6 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                 res.json(err_1);
                 return [2 /*return*/];
             case 4: return [2 /*return*/];
-        }
-    });
-}); };
-// update product
-var update = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var products, product;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                products = {
-                    name: req.body.name,
-                    price: req.body.price
-                };
-                return [4 /*yield*/, productModel.update(parseInt(req.params.id), products)];
-            case 1:
-                product = _a.sent();
-                res.json(product);
-                return [2 /*return*/];
-        }
-    });
-}); };
-// Delete product
-var deleteproduct = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var product, err_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, productModel["delete"](parseInt(req.params.id))];
-            case 1:
-                product = _a.sent();
-                res.json("Product with id ".concat(req.params.id, " Deleted Successfully"));
-                return [3 /*break*/, 3];
-            case 2:
-                err_2 = _a.sent();
-                res.status(400);
-                res.json(err_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
         }
     });
 }); };

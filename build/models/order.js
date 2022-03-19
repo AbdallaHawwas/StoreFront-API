@@ -102,7 +102,7 @@ var orderStore = /** @class */ (function () {
                         return [4 /*yield*/, database_1.Client.connect()];
                     case 1:
                         connect = _a.sent();
-                        sql = 'INSERT INTO orders (productId,userId,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
+                        sql = 'INSERT INTO orders (product_id,user_id,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
                         return [4 /*yield*/, connect.query(sql, [order.productId, order.userId, order.quantity, order.status])];
                     case 2:
                         result = _a.sent();
@@ -116,35 +116,10 @@ var orderStore = /** @class */ (function () {
             });
         });
     };
-    // Update existing order
-    orderStore.prototype.update = function (id, order) {
-        return __awaiter(this, void 0, void 0, function () {
-            var connect, sql, result, err_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
-                    case 1:
-                        connect = _a.sent();
-                        sql = 'UPDATE orders SET productId = $1,userId = $2,quantity = $3,status = $4 WHERE id = $5';
-                        return [4 /*yield*/, connect.query(sql, [order.productId, order.userId, order.quantity, order.status, id])];
-                    case 2:
-                        result = _a.sent();
-                        connect.release();
-                        return [2 /*return*/, result.rows[0]];
-                    case 3:
-                        err_4 = _a.sent();
-                        throw new Error("Can't Update order with id ".concat(order.id, " ").concat(err_4));
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
     // Delete existing user
     orderStore.prototype["delete"] = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var connect, sql, result, err_5;
+            var connect, sql, result, err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -159,8 +134,8 @@ var orderStore = /** @class */ (function () {
                         connect.release();
                         return [2 /*return*/, result.rows[0]];
                     case 3:
-                        err_5 = _a.sent();
-                        throw new Error("Can't Delete User with id ".concat(id, " ").concat(err_5));
+                        err_4 = _a.sent();
+                        throw new Error("Can't Delete User with id ".concat(id, " ").concat(err_4));
                     case 4: return [2 /*return*/];
                 }
             });

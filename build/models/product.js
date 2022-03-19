@@ -77,7 +77,7 @@ var productStore = /** @class */ (function () {
                         return [4 /*yield*/, database_1.Client.connect()];
                     case 1:
                         connect = _a.sent();
-                        sql = 'SELECT * FROM products WHERE id = $1';
+                        sql = "SELECT * FROM products WHERE id=$1";
                         return [4 /*yield*/, connect.query(sql, [id])];
                     case 2:
                         result = _a.sent();
@@ -85,7 +85,7 @@ var productStore = /** @class */ (function () {
                         return [2 /*return*/, result.rows[0]];
                     case 3:
                         err_2 = _a.sent();
-                        throw new Error("Can't get product with id ".concat(id, " ").concat(err_2));
+                        throw new Error("Can't get product with id ".concat(id, " : ").concat(err_2));
                     case 4: return [2 /*return*/];
                 }
             });
