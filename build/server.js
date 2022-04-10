@@ -9,6 +9,7 @@ var body_parser_1 = __importDefault(require("body-parser"));
 var user_1 = __importDefault(require("./handler/user"));
 var product_1 = __importDefault(require("./handler/product"));
 var order_1 = __importDefault(require("./handler/order"));
+var dashboard_1 = __importDefault(require("./handler/dashboard."));
 var app = (0, express_1["default"])();
 var address = "0.0.0.0:3000";
 var corsOptions = {
@@ -23,6 +24,7 @@ app.get('/', function (req, res) {
 (0, user_1["default"])(app);
 (0, product_1["default"])(app);
 (0, order_1["default"])(app);
+(0, dashboard_1["default"])(app);
 app.get('/test-cors', (0, cors_1["default"])(corsOptions), function (req, res, next) {
     res.json({ msg: 'This is CORS enabled with middleware' });
 });

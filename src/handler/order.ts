@@ -28,27 +28,23 @@ const show = async(req:Request,res:Response)=>{
 // Add New order
 const create = async(req:Request,res:Response)=>{
     const orders : order ={
-        productId: req.body.productId,
-        userId:req.body.userId,
-        quantity:req.body.quantity,
-        status:req.body.status
+        productId: parseInt(req.body.productId),
+        userId:    parseInt(req.body.userId),
+        quantity:  req.body.quantity,
+        status:    req.body.status
     }
-     try{
+    // Check user with jwt
+    try{
         const authorizationHeader = req.headers.authorization
         const token = (authorizationHeader as string).split(' ')[1]
-        const decode : string | JwtPayload = jwt.verify(token, process.env.TOKEN_SECRET as string);
-        if(decode.id  !== orders.userId){
-            throw new Error('User id does not match!');
-        }
-        res.json(decode)
+        jwt.verify(token, process.env.TOKEN_SECRET as string);
 
     } catch(err) {
         res.status(401)
         res.json('Access denied, invalid token')
         return
     }
-    
-
+    // Procced after auth
     try {
         const order = await orderModel.create(orders);
         res.json(order);

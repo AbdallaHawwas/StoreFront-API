@@ -8,9 +8,6 @@ const userRoutes = (app: express.Application) => {
     app.get('/users', index)
     app.get('/users/:id', show)
     app.post('/users', create)
-    // app.post('/user-auth', authenticate)
-    // app.put('/users/:id', update)
-    // app.delete('/users/:id', deleteuser)
 }
 // Get All users
 const index = async(req:Request,res:Response)=>{
@@ -62,22 +59,6 @@ const create = async(req:Request,res:Response)=>{
         res.json(`${err} : ${users}`)
     }
 }
-// Authenticate User
-// const authenticate = async (req:Request,res:Response)=>{
-//     const users : user ={
-//         firstName: req.body.firstName,
-//         lastName: req.body.lastName,
-//         password:req.body.password
-//     }
-//     try{
-//         const user = await userModel.authenticate(users.firstName as string ,users.lastName as string ,users.password as string);
-//         const token = jwt.sign({firstName: users.firstName ,lastName: users.lastName}, process.env.TOKEN_SECRET as jwt.Secret);
-//         res.json(token);
-//     }
-//     catch(err){
-//         res.status(401)
-//         res.json({err})
-//     }
-// }
+
 
 export default userRoutes;

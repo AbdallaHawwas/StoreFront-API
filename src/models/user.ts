@@ -1,5 +1,5 @@
 import express,{Request,Response  } from "express";
-import {Client} from "../database";
+import {pool} from "../database";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 
@@ -14,7 +14,7 @@ export class userStorage {
     // Get All users
     async index() :Promise<user> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "SELECT * FROM users";
             const result = await connect.query(sql);
             connect.release();
@@ -26,7 +26,7 @@ export class userStorage {
     // Get Specified user
     async show(id:number) :Promise<user> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "SELECT firstName,lastName FROM users WHERE id=$1";
             const result = await connect.query(sql,[id]);
             connect.release();
@@ -38,7 +38,7 @@ export class userStorage {
     // Get Specified user
     async create(user:user) :Promise<user> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "INSERT INTO users (firstName,lastName,password) VALUES ($1,$2,$3) RETURNING *";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
             const result = await connect.query(sql,[user.firstName,user.lastName,hashPass]);
@@ -50,7 +50,7 @@ export class userStorage {
     }
     // Authenticate 
     async authenticate(firstName:string,lastName:string,password:string):Promise<user | null>{
-        const connect = await Client.connect();
+        const connect = await pool.connect();
         const sql = "SELECT password FROM users WHERE firstName = $1,lastName = $2";
         const result = await connect.query(sql,[firstName,lastName]);
 
@@ -68,7 +68,7 @@ export class userStorage {
     // Update Specified user
     async update(id:number,user:user) :Promise<user> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "UPDATE users SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
             const hashPass = bcrypt.hashSync(user.password + (process.env.BCRYPT_PASSWORD as string) ,parseInt(process.env.SALT_ROUNDS as string))
             const result = await connect.query(sql,[user.firstName,hashPass,user.lastName,id]);
@@ -81,7 +81,7 @@ export class userStorage {
     // Delete user
     async delete(id:number) :Promise<user> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "DELETE FROM users WHERE id = $1";
             const result = await connect.query(sql,[id]);
             connect.release();

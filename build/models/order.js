@@ -49,7 +49,7 @@ var orderStore = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "SELECT * FROM orders";
@@ -74,7 +74,7 @@ var orderStore = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = 'SELECT * FROM orders WHERE id = $1';
@@ -99,7 +99,7 @@ var orderStore = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = 'INSERT INTO orders (product_id,user_id,quantity,status) VALUES ($1,$2,$3,$4) RETURNING *';
@@ -124,7 +124,7 @@ var orderStore = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = 'DELETE FROM orders WHERE id = $1';

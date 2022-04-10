@@ -1,5 +1,5 @@
 import express,{Request,Response  } from "express";
-import {Client} from "../database";
+import {pool} from "../database";
 
 export type product = {
     id ?: Number,
@@ -11,7 +11,7 @@ export class productStore{
     // Get All products
     async index() :Promise<product> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "SELECT * FROM products";
             const result = await connect.query(sql);
             connect.release();
@@ -23,7 +23,7 @@ export class productStore{
     // Get Speciefied product
     async show(id:number) :Promise<product> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = "SELECT * FROM products WHERE id=$1";
             const result = await connect.query(sql,[id]);
             connect.release();
@@ -35,7 +35,7 @@ export class productStore{
     // Add New product
     async create(product:product) :Promise<product> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = 'INSERT INTO products (name,price) VALUES ($1,$2) RETURNING *';
             const result = await connect.query(sql,[product.name,product.price]);
             connect.release();
@@ -47,7 +47,7 @@ export class productStore{
     // Update existing product
     async update(id:number,product:product) :Promise<product> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = 'UPDATE products SET name = $1,price = $2 WHERE id = $3 RETURNING *';
             const result = await connect.query(sql,[product.name,product.price,id]);
             connect.release();
@@ -59,7 +59,7 @@ export class productStore{
     // Delete existing user
     async delete(id:number) :Promise<product> {
         try{
-            const connect = await Client.connect();
+            const connect = await pool.connect();
             const sql = 'DELETE FROM products WHERE id = $1';
             const result = await connect.query(sql,[id]);
             connect.release();

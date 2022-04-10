@@ -53,7 +53,7 @@ var userStorage = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "SELECT * FROM users";
@@ -78,7 +78,7 @@ var userStorage = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "SELECT firstName,lastName FROM users WHERE id=$1";
@@ -103,7 +103,7 @@ var userStorage = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "INSERT INTO users (firstName,lastName,password) VALUES ($1,$2,$3) RETURNING *";
@@ -127,7 +127,7 @@ var userStorage = /** @class */ (function () {
             var connect, sql, result, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, database_1.Client.connect()];
+                    case 0: return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "SELECT password FROM users WHERE firstName = $1,lastName = $2";
@@ -153,7 +153,7 @@ var userStorage = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "UPDATE users SET firstName = $1,password = $2,lastName = $3 WHERE id = $4";
@@ -179,7 +179,7 @@ var userStorage = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         connect = _a.sent();
                         sql = "DELETE FROM users WHERE id = $1";

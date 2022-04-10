@@ -78,24 +78,21 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 // Add New order
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orders, authorizationHeader, token, decode, order, err_1;
+    var orders, authorizationHeader, token, order, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 orders = {
-                    productId: req.body.productId,
-                    userId: req.body.userId,
+                    productId: parseInt(req.body.productId),
+                    userId: parseInt(req.body.userId),
                     quantity: req.body.quantity,
                     status: req.body.status
                 };
+                // Check user with jwt
                 try {
                     authorizationHeader = req.headers.authorization;
                     token = authorizationHeader.split(' ')[1];
-                    decode = jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
-                    if (decode.id !== orders.userId) {
-                        throw new Error('User id does not match!');
-                    }
-                    res.json(decode);
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
                 }
                 catch (err) {
                     res.status(401);

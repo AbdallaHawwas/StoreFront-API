@@ -39,87 +39,124 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var user_1 = require("../models/user");
+var dashboard_1 = require("../services/dashboard");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var userModel = new user_1.userStorage();
-var userRoutes = function (app) {
-    app.get('/users', index);
-    app.get('/users/:id', show);
-    app.post('/users', create);
+var dashboardRoutes = function (app) {
+    app.get('/users-with-orders', usersWithOrders);
+    app.get('/active-user-orders/:user_id', activeUserOrders);
+    app.get('/completed-user-orders/:user_id', completedUserOrders);
+    app.get('/current-user-order/:user_id', currentUserOrder);
 };
-// Get All users
-var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, authorizationHeader, token;
+var dashboard = new dashboard_1.DashboardQueries();
+var usersWithOrders = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, userModel.index()];
+            case 0: return [4 /*yield*/, dashboard.usersWithOrders()];
             case 1:
-                user = _a.sent();
-                try {
-                    authorizationHeader = req.headers.authorization;
-                    token = authorizationHeader.split(' ')[1];
-                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
-                    res.json(user);
-                }
-                catch (err) {
-                    res.status(401);
-                    res.json('Access denied, invalid token');
-                    return [2 /*return*/];
-                }
+                users = _a.sent();
+                res.json(users);
                 return [2 /*return*/];
         }
     });
 }); };
-// Get Speciefied user
-var show = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, authorizationHeader, token;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, userModel.show(parseInt(req.params.id))];
-            case 1:
-                user = _a.sent();
-                try {
-                    authorizationHeader = req.headers.authorization;
-                    token = authorizationHeader.split(' ')[1];
-                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
-                    res.json(user);
-                }
-                catch (err) {
-                    res.status(401);
-                    res.json('Access denied, invalid token');
-                    return [2 /*return*/];
-                }
-                return [2 /*return*/];
-        }
-    });
-}); };
-// Add New user
-var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, user, token, err_1;
+var activeUserOrders = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var authorizationHeader, token, orders, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                users = {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    password: req.body.password
-                };
+                // Check authorization
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, userModel.create(users)];
+                return [4 /*yield*/, dashboard.activeUserOrders(parseInt(req.params.user_id))];
             case 2:
-                user = _a.sent();
-                token = jsonwebtoken_1["default"].sign({ firstName: users.firstName, lastName: users.lastName }, process.env.TOKEN_SECRET);
-                res.json({ user: user, token: token });
+                orders = _a.sent();
+                res.json(orders);
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
                 res.status(400);
-                res.json("".concat(err_1, " : ").concat(users));
-                return [3 /*break*/, 4];
+                res.json(err_1);
+                return [2 /*return*/];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports["default"] = userRoutes;
+var completedUserOrders = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var authorizationHeader, token, orders, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // Check authorization
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, dashboard.completedUserOrders(parseInt(req.params.user_id))];
+            case 2:
+                orders = _a.sent();
+                res.json(orders);
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                res.status(400);
+                res.json(err_2);
+                return [2 /*return*/];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+var currentUserOrder = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var authorizationHeader, token, orders, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // Check authorization
+                try {
+                    authorizationHeader = req.headers.authorization;
+                    token = authorizationHeader.split(' ')[1];
+                    jsonwebtoken_1["default"].verify(token, process.env.TOKEN_SECRET);
+                }
+                catch (err) {
+                    res.status(401);
+                    res.json('Access denied, invalid token');
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, dashboard.currentUserOrder(parseInt(req.params.user_id))];
+            case 2:
+                orders = _a.sent();
+                res.json(orders);
+                return [3 /*break*/, 4];
+            case 3:
+                err_3 = _a.sent();
+                res.status(400);
+                res.json(err_3);
+                return [2 /*return*/];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports["default"] = dashboardRoutes;

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "test": "ENV=test db-migrate up --env test && jasmine-ts && db-migrate db:drop test",
+    "test" : "db-migrate --env test up && ENV=test jasmine-ts --config jasmine.json || db-migrate --env test down",
     "testt": "jasmine-ts 'src/models/tests/**/*.ts'",
     "serve": "nodemon src/server.ts",
     "start": "node src/server.ts",

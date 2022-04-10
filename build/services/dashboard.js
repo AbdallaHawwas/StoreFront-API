@@ -42,17 +42,17 @@ var DashboardQueries = /** @class */ (function () {
     function DashboardQueries() {
     }
     // Get all products that have been included in orders
-    DashboardQueries.prototype.productsInOrders = function () {
+    DashboardQueries.prototype.usersWithOrders = function () {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = 'SELECT * FROM orders INNER JOIN products ON orders.product_id = products.id';
+                        sql = 'SELECT DISTINCT users.id,users.firstName,users.lastName FROM orders INNER JOIN users ON orders.user_id = users.id';
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
@@ -66,26 +66,76 @@ var DashboardQueries = /** @class */ (function () {
             });
         });
     };
-    // Get all products that have been included in orders
-    DashboardQueries.prototype.usersInOrders = function () {
+    // Get Current Active User Orders
+    DashboardQueries.prototype.activeUserOrders = function (user_id) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, database_1.Client.connect()];
+                        return [4 /*yield*/, database_1.pool.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = 'SELECT * FROM orders INNER JOIN users ON orders.users_id = users.id';
-                        return [4 /*yield*/, conn.query(sql)];
+                        sql = 'SELECT orders.*,users.id FROM orders INNER JOIN users ON users.id = orders.user_id  WHERE user_id = $1 AND status = 1';
+                        return [4 /*yield*/, conn.query(sql, [user_id])];
                     case 2:
                         result = _a.sent();
                         conn.release();
                         return [2 /*return*/, result.rows];
                     case 3:
                         err_2 = _a.sent();
-                        throw new Error("unable get products and orders: ".concat(err_2));
+                        throw new Error("unable get orders: ".concat(err_2));
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // Get Current Completed User Orders
+    DashboardQueries.prototype.completedUserOrders = function (user_id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var conn, sql, result, err_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, database_1.pool.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        sql = 'SELECT orders.*,users.id FROM orders INNER JOIN users ON orders.user_id = users.id WHERE user_id = $1 AND status = 2';
+                        return [4 /*yield*/, conn.query(sql, [user_id])];
+                    case 2:
+                        result = _a.sent();
+                        conn.release();
+                        return [2 /*return*/, result.rows];
+                    case 3:
+                        err_3 = _a.sent();
+                        throw new Error("unable get orders: ".concat(err_3));
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // Get Current User Order
+    DashboardQueries.prototype.currentUserOrder = function (user_id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var conn, sql, result, err_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, database_1.pool.connect()];
+                    case 1:
+                        conn = _a.sent();
+                        sql = 'SELECT orders.*,users.id FROM orders INNER JOIN users ON orders.user_id = users.id WHERE user_id = $1 AND status = 1 ORDER BY orders.id DESC LIMIT 1';
+                        return [4 /*yield*/, conn.query(sql, [user_id])];
+                    case 2:
+                        result = _a.sent();
+                        conn.release();
+                        return [2 /*return*/, result.rows];
+                    case 3:
+                        err_4 = _a.sent();
+                        throw new Error("unable get orders: ".concat(err_4));
                     case 4: return [2 /*return*/];
                 }
             });
